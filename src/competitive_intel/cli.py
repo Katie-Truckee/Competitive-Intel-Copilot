@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import argparse
+import os
 
 from dotenv import load_dotenv
 
 from .config import load_competitors
 from .collectors.scraper import fetch_page_text
+from .collectors.search import search
 from .diff import Change, compute_diff, is_meaningful
 from .report import write_report
 from .storage import SnapshotStore, slugify
@@ -17,6 +19,10 @@ def run() -> None:
     competitors = load_competitors()
     store = SnapshotStore()
     changes: list[Change] = []
+
+    search_enabled = bool(os.environ.get("EXA_API_KEY"))
+    if not search_enabled:
+        print("[warn] EXA_API_KEY not set — skipping search-based monitoring")
 
     for competitor in competitors:
         for page in competitor.pages:
@@ -39,7 +45,17 @@ def run() -> None:
                 changes.append(Change(competitor.name, page.label, page.url, diff_text))
                 print(f"[info] change detected: {competitor.name} / {page.label}")
 
-        # search_queries collection is not wired in yet — see collectors/search.py
+        if search_enabled:
+            for query in competitor.search_queries:
+                try:
+                    results = search(query)
+                except Exception as exc:
+                    print(f"[warn] search failed for '{competitor.name}' / '{query}': {exc}")
+                    continue
+
+                for r in results:
+                    changes.append(Change(competitor.name, f"search: {query}", r.url, r.text))
+                    print(f"[info] search hit: {competitor.name} / {query} -> {r.url}")
 
     summary = synthesize_summary(changes)
     report_path = write_report(summary, changes)

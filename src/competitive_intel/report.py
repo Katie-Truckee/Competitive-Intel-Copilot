@@ -16,7 +16,7 @@ def write_report(summary: str, changes: list[Change], out_dir: Path = DEFAULT_RE
     if changes:
         lines += ["## Raw changes", ""]
         for c in changes:
-            lines += [f"### {c.competitor} — {c.label}", f"<{c.url}>", "", "```diff", c.diff_text, "```", ""]
+            lines += [f"### {c.competitor} — {c.label}", f"<{c.url}>", "", "```", c.content, "```", ""]
 
     report_path.write_text("\n".join(lines))
     return report_path

@@ -23,7 +23,7 @@ def synthesize_summary(changes: list[Change]) -> str:
     client = Anthropic(api_key=api_key)
 
     changes_block = "\n\n".join(
-        f"## {c.competitor} — {c.label} ({c.url})\n```diff\n{c.diff_text}\n```" for c in changes
+        f"## {c.competitor} — {c.label} ({c.url})\n```\n{c.content}\n```" for c in changes
     )
 
     response = client.messages.create(

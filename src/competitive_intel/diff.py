@@ -9,7 +9,7 @@ class Change:
     competitor: str
     label: str
     url: str
-    diff_text: str
+    content: str  # a unified diff for page changes, or raw text for search hits
 
 
 def compute_diff(old: str, new: str) -> str:

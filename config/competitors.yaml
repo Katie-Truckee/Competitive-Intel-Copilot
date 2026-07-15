@@ -1,0 +1,14 @@
+# One entry per competitor you want to track.
+# `pages` are scraped directly and diffed run-over-run.
+# `search_queries` are run against the configured search provider (see collectors/search.py).
+
+competitors:
+  - name: Example Competitor
+    pages:
+      - label: pricing
+        url: https://example.com/pricing
+      - label: changelog
+        url: https://example.com/changelog
+    search_queries:
+      - "Example Competitor pricing change"
+      - "Example Competitor announcement"
